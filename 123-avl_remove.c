@@ -1,135 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "binary_trees.h"
 
 /**
- * bal - Measures balance factor of a AVL
- * @tree: tree to go through
- * Return: balanced factor
+ * main - Entry point
+ *
+ * Return: 0 on success, error code on failure
  */
-void bal(avl_t **tree)
+int main(void)
 {
-	int bval;
+    avl_t *tree;
+    int array[] = {
+        79, 47, 68, 87, 84, 91, 21, 32, 34, 2,
+        20, 22, 98, 1, 62, 95
+    };
 
-	if (tree == NULL || *tree == NULL)
-		return;
-	if ((*tree)->left == NULL && (*tree)->right == NULL)
-		return;
-	bal(&(*tree)->left);
-	bal(&(*tree)->right);
-	bval = binary_tree_balance((const binary_tree_t *)*tree);
-	if (bval > 1)
-		*tree = binary_tree_rotate_right((binary_tree_t *)*tree);
-	else if (bval < -1)
-		*tree = binary_tree_rotate_left((binary_tree_t *)*tree);
-}
-/**
- * successor - get the next successor i mean the min node in the right subtree
- * @node: tree to check
- * Return: the min value of this tree
- */
-int successor(bst_t *node)
-{
-	int left = 0;
+    size_t n = sizeof(array) / sizeof(array[0]);
 
-	if (node == NULL)
-	{
-		return (0);
-	}
-	else
-	{
-		left = successor(node->left);
-		if (left == 0)
-		{
-			return (node->n);
-		}
-		return (left);
-	}
+    tree = array_to_avl(array, n);
+    if (!tree)
+        return (1);
+    binary_tree_print(tree);
 
-}
-/**
- *remove_type - function that removes a node depending of its children
- *@root: node to remove
- *Return: 0 if it has no children or other value if it has
- */
-int remove_type(bst_t *root)
-{
-	int new_value = 0;
+    tree = avl_remove(tree, 47);
+    printf("Removed 47...\n");
+    binary_tree_print(tree);
 
-	if (!root->left && !root->right)
-	{
-		if (root->parent->right == root)
-			root->parent->right = NULL;
-		else
-			root->parent->left = NULL;
-		free(root);
-		return (0);
-	}
-	else if ((!root->left && root->right) || (!root->right && root->left))
-	{
-		if (!root->left)
-		{
-			if (root->parent->right == root)
-				root->parent->right = root->right;
-			else
-				root->parent->left = root->right;
-			root->right->parent = root->parent;
-		}
-		if (!root->right)
-		{
-			if (root->parent->right == root)
-				root->parent->right = root->left;
-			else
-				root->parent->left = root->left;
-			root->left->parent = root->parent;
-		}
-		free(root);
-		return (0);
-	}
-	else
-	{
-		new_value = successor(root->right);
-		root->n = new_value;
-		return (new_value);
-	}
-}
-/**
- * bst_remove - remove a node from a BST tree
- * @root: root of the tree
- * @value: node with this value to remove
- * Return: the tree changed
- */
-bst_t *bst_remove(bst_t *root, int value)
-{
-	int type = 0;
+    tree = avl_remove(tree, 79);
+    printf("Removed 79...\n");
+    binary_tree_print(tree);
 
-	if (root == NULL)
-		return (NULL);
-	if (value < root->n)
-		bst_remove(root->left, value);
-	else if (value > root->n)
-		bst_remove(root->right, value);
-	else if (value == root->n)
-	{
-		type = remove_type(root);
-		if (type != 0)
-			bst_remove(root->right, type);
-	}
-	else
-		return (NULL);
-	return (root);
-}
+    tree = avl_remove(tree, 32);
+    printf("Removed 32...\n");
+    binary_tree_print(tree);
 
-/**
- * avl_remove - remove a node from a AVL tree
- * @root: root of the tree
- * @value: node with this value to remove
- * Return: the tree changed
- */
-avl_t *avl_remove(avl_t *root, int value)
-{
-	avl_t *root_a = (avl_t *) bst_remove((bst_t *) root, value);
+    tree = avl_remove(tree, 62);
+    printf("Removed 62...\n");
+    binary_tree_print(tree);
 
-	if (root_a == NULL)
-		return (NULL);
-	bal(&root_a);
-	return (root_a);
+    tree = avl_remove(tree, 68);
+    printf("Removed 68...\n");
+    binary_tree_print(tree);
+
+    tree = avl_remove(tree, 84);
+    printf("Removed 34...\n");
+    binary_tree_print(tree);
+
+    tree = avl_remove(tree, 22);
+    printf("Removed 22...\n");
+    binary_tree_print(tree);
+    binary_tree_delete(tree);
+    return (0);
 }
